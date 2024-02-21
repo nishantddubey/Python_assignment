@@ -16,13 +16,14 @@ We will achieve this using Flask Framework.
 
 Step 1: 
 First we need to install Flask and Boto3 using command 
-```bashh
+``` bash
 pip install flask boto3
 ```
 or 
+``` bash
 pip install flask
 pip install boto3
-
+```
 
 
 Flask:- Flask is a lightweight web application framework for Python. It is designed to be simple, easy to use, and flexible, allowing developers to quickly build web applications with minimal boilerplate code.
@@ -31,18 +32,20 @@ Boto3:- Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK) fo
 
 Step 2 :
 create a project folder in which we can create our required files.
-
+``` bash
  mkdir <projectname>
-
+```
 eg: mkdir s3manager 
  
 Enter into the project folder using cd command
+```  bash
 cd s3manager
+```
 Step 3: 
 Create an app.py file or any python file as per your requirement this file will be our application.
-
+```bash
 touch app.py
-
+```
 Step 4:
 open that file in any editor or notepad (I have used VS Code). 
 And import flask and boto3 in that file..
@@ -62,9 +65,9 @@ Os : We are importing os  because the os module is imported in the provided code
 
 Step 5:
 Add this line our python file (app.py) :
-
+```bash
 app = Flask(__name__)
-
+```
 This line creates a Flask application instance.
 
 
@@ -72,30 +75,34 @@ This line creates a Flask application instance.
 
 
 Step 6: 
-
+```bash
 AWS_ACCESS_KEY_ID = 'your_access_key_id'
 AWS_SECRET_ACCESS_KEY = 'your_secret_access_key'
 S3_BUCKET_NAME = 'your_bucket_name'
+```
 Add this line in our app.py file to define the AWS access credentials (Access Key ID and Secret Access Key) and the AWS region. These credentials are used to authenticate and authorize requests to AWS services.
 
 Step 7: 
+```bash
 s3 = boto3.client('s3',
                   aws_access_key_id=AWS_ACCESS_KEY_ID,
                   aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                   region_name=AWS_REGION)
-
+```
 This line creates an S3 client object using the boto3.client() method. It uses the provided AWS access credentials and region to authenticate requests and interact with the Amazon S3 service.
 
 
 Step 8: 
+```bash
 BUCKET_NAME = 's3access-file'
-
+```
 This line defines the name of the S3 bucket that will be used by the application.
 
 Step:9
+```bash
 if __name__ == '__main__':
     app.run(debug=True)
-
+```
 Add this line at the end of the file.This block of code runs the Flask application when the script is executed directly (__name__ == '__main__'). It runs the application in debug mode (debug=True), which enables helpful debugging features and automatically reloads the application when code changes are detected.
 
 Now all the configuration has been completed lets create the required functions:
@@ -105,14 +112,8 @@ Note: Write all the functions before step 9.
 Implement the required functions for managing S3 files, including listing contents, creating/deleting folders and buckets, uploading/deleting files, and copying/moving files within S3.
 
 
-
-
-
-
-
-
-Function for listing content
-
+# Function for listing content
+```bash
 @app.route('/')
 def index():
     # List contents of the S3 bucket
@@ -130,8 +131,9 @@ def index():
                 folders[folder_name].append(file_name)
                 files.append(file_name)  # Collect all file names
     return render_template('index.html', folders=folders, files=files)
+```
 
-       This code defines a Flask route for the root URL ("/"), which renders the index page of a web application. Within the route function:
+   This code defines a Flask route for the root URL ("/"), which renders the index page of a web application. Within the route function:
     1. It sends a request to the Amazon S3 service to list the objects (files and folders) in a specific S3 bucket (BUCKET_NAME).
     2. It initializes empty lists (files) and an empty dictionary (folders) to store the names of files and folders retrieved from the S3 bucket, respectively.
     3. It checks if the response from the S3 service contains any objects. If it does, it iterates through each object, determining whether it's a file or a folder.
@@ -166,7 +168,8 @@ For files, the code extracts the file name from the object key and determines th
     return render_template('index.html', folders=folders, files=files)
 Finally, this line renders the index.html template, passing the folders dictionary and the files list as arguments. These variables contain information about the folders and files in the S3 bucket, which will be used to dynamically generate the content of the index page.
 We have written the code to list the contents. Now will proceed with the operations such as creation and deletion of folders(bucket), upload and delete files and copy and move files.
-Function for creating folder:
+# Function for creating folder:
+``` bash
 @app.route('/create-folder', methods=['POST'])
 def create_folder():
     folder_name = request.form['folder-name']
@@ -174,6 +177,7 @@ def create_folder():
         # Create folder in S3 bucket
         s3.put_object(Bucket=BUCKET_NAME, Key=(folder_name + '/'))
     return redirect(url_for('index'))
+```
 This route allows users to create a new folder in the S3 bucket by submitting a form with the desired folder name. After the folder is created, the user is redirected to the index page to see the updated contents of the S3 bucket.
 @app.route('/create-folder', methods=['POST'])
 This line is a decorator that specifies the URL endpoint ('/create-folder') for the route. It also defines that this route will only respond to POST requests (methods=['POST']). This means that this route will handle form submissions where the HTTP method is POST.
@@ -188,7 +192,8 @@ This line sends a request to the Amazon S3 service to create a new object (folde
 return redirect(url_for('index'))
 After the folder creation is complete, this line redirects the user to the index route (index()). The redirect() function is used to perform an HTTP redirect, and url_for('index') generates the URL for the index route based on its name. So, the user is redirected back to the index page, where they can see the updated contents of the S3 buckets.
 
-Function for deleting the folder:
+# Function for deleting the folder:
+```bash
 @app.route('/delete-folder', methods=['POST'])
 def delete_folder():
     folder_name = request.form['folder-name']
@@ -196,7 +201,7 @@ def delete_folder():
         # Delete folder and its contents from S3 bucket
         s3.delete_object(Bucket=BUCKET_NAME, Key=(folder_name))
     return redirect(url_for('index'))
-
+```
 This code defines a Flask route for deleting a folder from the S3 bucket. It expects the folder name to be submitted via a POST request to the '/delete-folder' endpoint. Once the folder name is received, it sends a request to the Amazon S3 service to delete the specified folder and its contents from the bucket. After successful deletion, it redirects the user back to the index page to view the updated contents of the S3 bucket.
 
 @app.route('/delete-folder', methods=['POST'])
@@ -213,7 +218,8 @@ This line sends a request to the Amazon S3 service to delete the specified folde
 return redirect(url_for('index'))
 After the folder deletion is complete, this line redirects the user to the index route (index()). The redirect() function is used to perform an HTTP redirect, and url_for('index') generates the URL for the index route based on its name. So, the user is redirected back to the index page, where they can view the updated contents of the S3 bucket.
 
-Function for deleting files.
+# Function for deleting files.
+```bash
   @app.route('/delete-file', methods=['POST'])
 def delete_file():
     file_name = request.form['file-name']
@@ -221,6 +227,7 @@ def delete_file():
         # Delete file from S3 bucket
         s3.delete_object(Bucket=BUCKET_NAME, Key=file_name)
     return redirect(url_for('index'))
+```
 This code defines a Flask route for deleting a file from the S3 bucket. It expects the file name to be submitted via a POST request to the '/delete-file' endpoint. Once the file name is received, it sends a request to the Amazon S3 service to delete the specified file from the bucket. After successful deletion, it redirects the user back to the index page to view the updated contents of the S3 bucket.
 
 @app.route('/delete-file', methods=['POST'])
@@ -237,7 +244,8 @@ This line sends a request to the Amazon S3 service to delete the specified file 
 return redirect(url_for('index'))
 After the file deletion is complete, this line redirects the user to the index route (index()). The redirect() function is used to perform an HTTP redirect, and url_for('index') generates the URL for the index route based on its name. So, the user is redirected back to the index page, where they can view the updated contents of the S3 bucket.
 
-Function to upload file:
+# Function to upload file:
+```  bash
 @app.route('/upload-file', methods=['POST'])
 def upload_file():
     file = request.files['file']
@@ -246,14 +254,11 @@ def upload_file():
         # Upload file to S3 bucket in the selected folder
         s3.upload_fileobj(file, BUCKET_NAME, folder + '/' + file.filename)
     return redirect(url_for('index'))
+```
 This code defines a Flask route for uploading a file to the S3 bucket. It expects a file to be uploaded along with the name of the folder where the file should be placed, submitted via a POST request to the '/upload-file' endpoint. Once the file and folder information are received, it uploads the file to the specified folder in the S3 bucket. After successful upload, it redirects the user back to the index page to view the updated contents of the S3 bucket.
 
-
-
-
-
-
-Function to copy file within s3:
+# Function to copy file within s3:
+``` bash
 @app.route('/copy-file', methods=['POST'])
 def copy_file():
     source_file = request.form['source-file']
@@ -262,10 +267,12 @@ def copy_file():
         # Copy file within S3 bucket
         s3.copy_object(Bucket=BUCKET_NAME, CopySource=f"{BUCKET_NAME}/{source_file}", Key=(destination_folder + '/' + os.path.basename(source_file)))
     return redirect(url_for('index'))
+```
 This code defines a Flask route for copying a file within the S3 bucket. It expects the name of the source file and the destination folder where the file should be copied to, submitted via a POST request to the '/copy-file' endpoint. Once the source file and destination folder information are received, it sends a request to the Amazon S3 service to copy the specified file to the specified destination folder within the same bucket. After successful copy, it redirects the user back to the index page to view the updated contents of the S3 bucket.
 
-Function to move  file within s3:
-    @app.route('/move-file', methods=['POST'])
+# Function to move  file within s3:
+```bash
+@app.route('/move-file', methods=['POST'])
 def move_file():
     source_file = request.form['source-file']
     destination_folder = request.form['destination-folder']
@@ -274,8 +281,10 @@ def move_file():
         s3.copy_object(Bucket=BUCKET_NAME, CopySource=f"{BUCKET_NAME}/{source_file}", Key=(destination_folder + '/' + os.path.basename(source_file)))
         s3.delete_object(Bucket=BUCKET_NAME, Key=source_file)
     return redirect(url_for('index'))
+```
 This code defines a Flask route for moving a file within the S3 bucket. It expects the name of the source file and the destination folder where the file should be moved to, submitted via a POST request to the '/move-file' endpoint. Once the source file and destination folder information are received, it first copies the specified file to the specified destination folder within the same bucket and then deletes the original file. After successfully moving the file, it redirects the user back to the index page to view the updated contents of the S3 bucket.
 After doing all the configuration and creating all the functions our app.py file should be look like this:
+```bash
 from flask import Flask, render_template, request, redirect, url_for
 import boto3
 import os
@@ -369,15 +378,23 @@ def move_file():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
+```
 After creating the  functions create one templates folder in project folder (s3manager in our case).
+```bash
 Mkdir templates
+```
 Now create a index.html file in templates and write code to list contents and other operations.
+```bash
 Cd templates
 touch index.html
+```
 write html code in index.html file
 After that create one static folder to store css file to style the UI.
+```bash
 Mkdir static
+```
 create one css file style.css
+```bash
 cd static
 touch style.css
+```
