@@ -398,3 +398,9 @@ create one css file style.css
 cd static
 touch style.css
 ```
+
+After completion of all processes and configuration to run application we have to run command:
+```bash
+python app.py
+```
+it will take to the browser and open the interface  where we can do our operations.
