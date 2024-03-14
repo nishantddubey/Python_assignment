@@ -292,8 +292,8 @@ import os
 app = Flask(__name__)
 
 # Configure AWS credentials
-AWS_ACCESS_KEY_ID = 'AKIAQT5APJTNRFRAYNT3'
-AWS_SECRET_ACCESS_KEY = 'pkzXhoHZFLyIZ5PbMipS+5dHBSc7dA/gX+k5427j'
+AWS_ACCESS_KEY_ID = 'Your AWS Access Key_ID'
+AWS_SECRET_ACCESS_KEY = 'Your AWS_SECret_Access Key_I'
 AWS_REGION = 'ap-south-1'
 
 # Create an S3 client
